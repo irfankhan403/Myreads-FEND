@@ -26,30 +26,46 @@ class BooksApp extends React.Component {
       showSearchPage: state
     });
   };
-  
-  
+
+
  /* Getting books*/
     componentDidMount(){
       /*BooksAPI.getAll().then( (resp) => console.log(resp) ) */
       /* changing state */
       BooksAPI.getAll().then( resp => this.setState({ books: resp }) );
+      
     }
- 
+
     changebookshelf = (book, shelf) => {
-      console.log("books indi", this);
-      this.setState({ books: this.state.books.map(d => { 
+      let isAvailable =false;
+
+      this.setState({ books: this.state.books.map(d => {
         if( d.id === book.id){
          // console.log("d id id", d.id)
           //console.log("book id is", book.id)
+          isAvailable = true;
           d.shelf = shelf;
           return d;
         }else
           return d;
            })
       });
+
+      if(!isAvailable){
+        console.log(book);
+        // Object.preventExtensions(book);
+        let b={...book,shelf}
+        // Object.defineProperty(book,
+        //   'shelf', { value: shelf }
+        // );
+        // book["shelf"] = shelf;
+        this.setState({ books: [...this.state.books , b]});
+        console.log(book);
+      }
     };
 
-  
+
+
 
   render() {
     return (
@@ -57,14 +73,14 @@ class BooksApp extends React.Component {
         {this.state.showSearchPage ? (
 
           //search component
-         <Search showSearchPage={this.updateSearchPage} />
+         <Search showSearchPage={this.updateSearchPage} changeshelf= {this.changebookshelf}/>
 
-          
+
         ) : (
           <div className="list-books">
             <Header />
-            <Shelves 
-                allBooks =  {this.state.books} 
+            <Shelves
+                allBooks =  {this.state.books}
                 changeshelf= {this.changebookshelf}/>
             <SearchButton  showSearchPage={this.updateSearchPage}/>
           </div>
